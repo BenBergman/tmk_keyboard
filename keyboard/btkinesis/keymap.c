@@ -80,27 +80,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Assign Fn key(0-7) to a layer to which switch with the Fn key pressed.
 static const uint8_t PROGMEM fn_layer[] = {
-    0,              // Fn0
-    1,              // Fn1
-    2,              // Fn2
-    3,              // Fn3
-    3,              // Fn4
-    5,              // Fn5
-    0,              // Fn6
-    0               // Fn7
+	0,              // Fn0
+	1,              // Fn1
+	2,              // Fn2
+	3,              // Fn3
+	3,              // Fn4
+	5,              // Fn5
+	0,              // Fn6
+	0               // Fn7
 };
 
 // Assign Fn key(0-7) to a keycode sent when release Fn key without use of the layer.
 // See layer.c for details.
 static const uint8_t PROGMEM fn_keycode[] = {
-    KC_NO,          // Fn0
-    KC_NO,          // Fn1
-    KC_SLSH,        // Fn2
-    KC_SCLN,        // Fn3
-    KC_NO,          // Fn4
-    KC_SPC,         // Fn5
-    KC_NO,          // Fn6
-    KC_NO           // Fn7
+	KC_NO,          // Fn0
+	KC_NO,          // Fn1
+	KC_SLSH,        // Fn2
+	KC_SCLN,        // Fn3
+	KC_NO,          // Fn4
+	KC_SPC,         // Fn5
+	KC_NO,          // Fn6
+	KC_NO           // Fn7
 };
 
 static const uint8_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -212,15 +212,15 @@ static const uint8_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 uint8_t keymap_get_keycode(uint8_t layer, uint8_t row, uint8_t col)
 {
-    return KEYCODE(layer, row, col);
+	return KEYCODE(layer, row, col);
 }
 
 uint8_t keymap_fn_layer(uint8_t index)
 {
-    return pgm_read_byte(&fn_layer[index]);
+	return pgm_read_byte(&fn_layer[index]);
 }
 
 uint8_t keymap_fn_keycode(uint8_t index)
 {
-    return pgm_read_byte(&fn_keycode[index]);
+	return pgm_read_byte(&fn_keycode[index]);
 }
