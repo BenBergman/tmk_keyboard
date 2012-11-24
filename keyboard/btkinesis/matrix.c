@@ -146,7 +146,7 @@ void matrix_init(void)
 
 uint8_t matrix_scan(void)
 {
-    uint8_t *tmp;
+    matrix_row_t *tmp;
 
     tmp = matrix_prev;
     matrix_prev = matrix;
