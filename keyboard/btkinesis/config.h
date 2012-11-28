@@ -34,7 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* matrix size */
 #define MATRIX_ROWS 8
-#define MATRIX_COLS 15
+#define MATRIX_COLS 12
 
 
 /* key combination for command */

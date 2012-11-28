@@ -51,28 +51,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *                         `-----------'   `-----------'
  */
 
+/*
+ * Condensed Kinesis matrix (original qwerty labelling)
+ *   | 0     1     2     3     4     5     6     7     8     9     10    11
+ * --+-----------------------------------------------------------------------
+ * 0 | =     1     2     3     4     5     6     7     8     9     0     -
+ * 1 | TB    Q     W     E     R     T     Y     U     I     O     P     \
+ * 2 | CP    A     S     D     F     G     H     J     K     L     ;     ‘
+ * 3 | LS    Z     X     C     V     B     N     M     ,     .     /     RS
+ * 4 |       `     IN    LT          RT    UP          DN    [     ]
+ * 5 |       F6    F7    F8                            F9    F10   F11
+ * 6 | HOME  F3    F4    F5    END   LCTRL SPACE ENTER F12   PS    SL    RALT
+ * 7 | BKSP  ESC   F1    F2    DEL   LALT  PGDN  RCTRL PB    PG    KY    PGUP
+ */
+
 // Convert physical keyboard layout to matrix array.
 // This is a macro to define keymap easily in keyboard layout form.
 #define	KEYMAP( \
-	K212, K213, K214, K112, K113, K114, K012, K013, K014, K312, K313, K314, K412, K413, K414, K512, K513, K514, \
-	K000, K001, K002, K003, K004, K005,                                     K406, K407, K408, K409, K410, K411, \
-	K100, K101, K102, K103, K104, K105,                                     K506, K507, K508, K509, K510, K511, \
-	K200, K201, K202, K203, K204, K205,                                     K606, K607, K608, K609, K610, K611, \
-	K300, K301, K302, K303, K304, K305,                                     K706, K707, K708, K709, K710, K711, \
-	      K401, K402, K403, K405,                                                 K306, K308, K309, K310, \
-	                                    K605, K505,             K704, K602, \
-	                              K603, K604, K503,             K702, K601, K600, \
-										      K501,             K700 \
+	K701, K702, K703, K601, K602, K603, K501, K502, K503, K508, K509, K510, K608, K609, K610, K708, K709, K710, \
+	K000, K001, K002, K003, K004, K005,                                     K006, K007, K008, K009, K010, K011, \
+	K100, K101, K102, K103, K104, K105,                                     K106, K107, K108, K109, K110, K111, \
+	K200, K201, K202, K203, K204, K205,                                     K206, K207, K208, K209, K210, K211, \
+	K300, K301, K302, K303, K304, K305,                                     K306, K307, K308, K309, K310, K311, \
+	      K401, K402, K403, K405,                                                 K406, K408, K409, K410, \
+	                                    K605, K705,             K611, K707, \
+	                              K700, K704, K600,             K706, K607, K606, \
+	                                          K604,             K711 \
 ) \
 { \
-	{ KC_##K000, KC_##K001, KC_##K002, KC_##K003, KC_##K004, KC_##K005, KC_NO,     KC_NO,     KC_NO,     KC_NO,     KC_NO,     KC_NO,     KC_##K012, KC_##K013, KC_##K014 }, \
-	{ KC_##K100, KC_##K101, KC_##K102, KC_##K103, KC_##K104, KC_##K105, KC_NO,     KC_NO,     KC_NO,     KC_NO,     KC_NO,     KC_NO,     KC_##K112, KC_##K113, KC_##K114 }, \
-	{ KC_##K200, KC_##K201, KC_##K202, KC_##K203, KC_##K204, KC_##K205, KC_NO,     KC_NO,     KC_NO,     KC_NO,     KC_NO,     KC_NO,     KC_##K212, KC_##K213, KC_##K214 }, \
-	{ KC_##K300, KC_##K301, KC_##K302, KC_##K303, KC_##K304, KC_##K305, KC_##K306, KC_NO,     KC_##K308, KC_##K309, KC_##K310, KC_NO,     KC_##K312, KC_##K313, KC_##K314 }, \
-	{ KC_NO,     KC_##K401, KC_##K402, KC_##K403, KC_NO,     KC_##K405, KC_##K406, KC_##K407, KC_##K408, KC_##K409, KC_##K410, KC_##K411, KC_##K412, KC_##K413, KC_##K414 }, \
-	{ KC_NO,     KC_##K501, KC_NO,     KC_##K503, KC_NO,     KC_##K505, KC_##K506, KC_##K507, KC_##K508, KC_##K509, KC_##K510, KC_NO,     KC_##K512, KC_##K513, KC_##K514 }, \
-	{ KC_##K600, KC_##K601, KC_##K602, KC_##K603, KC_##K604, KC_##K605, KC_##K606, KC_##K607, KC_##K608, KC_##K609, KC_##K610, KC_##K611, KC_NO,     KC_NO,     KC_NO     }, \
-	{ KC_##K700, KC_NO,     KC_##K702, KC_NO,     KC_##K704, KC_NO,     KC_##K706, KC_##K707, KC_##K708, KC_##K709, KC_##K710, KC_##K711, KC_NO,     KC_NO,     KC_NO     } \
+	{ KC_##K000, KC_##K001, KC_##K002, KC_##K003, KC_##K004, KC_##K005, KC_##K006, KC_##K007, KC_##K008, KC_##K009, KC_##K010, KC_##K011 }, \
+	{ KC_##K100, KC_##K101, KC_##K102, KC_##K103, KC_##K104, KC_##K105, KC_##K106, KC_##K107, KC_##K108, KC_##K109, KC_##K110, KC_##K111 }, \
+	{ KC_##K200, KC_##K201, KC_##K202, KC_##K203, KC_##K204, KC_##K205, KC_##K206, KC_##K207, KC_##K208, KC_##K209, KC_##K210, KC_##K211 }, \
+	{ KC_##K300, KC_##K301, KC_##K302, KC_##K303, KC_##K304, KC_##K305, KC_##K306, KC_##K307, KC_##K308, KC_##K309, KC_##K310, KC_##K311 }, \
+	{ KC_NO,     KC_##K401, KC_##K402, KC_##K403, KC_NO,     KC_##K405, KC_##K406, KC_NO,     KC_##K408, KC_##K409, KC_##K410, KC_NO     }, \
+	{ KC_NO,     KC_##K501, KC_##K502, KC_##K503, KC_NO,     KC_NO,     KC_NO,     KC_NO,     KC_##K508, KC_##K509, KC_##K510, KC_NO     }, \
+	{ KC_##K600, KC_##K601, KC_##K602, KC_##K603, KC_##K604, KC_##K605, KC_##K606, KC_##K607, KC_##K608, KC_##K609, KC_##K610, KC_##K611 }, \
+	{ KC_##K700, KC_##K701, KC_##K702, KC_##K703, KC_##K704, KC_##K705, KC_##K706, KC_##K707, KC_##K708, KC_##K709, KC_##K710, KC_##K711 } \
 }
 
 #define KEYCODE(layer, row, col) (pgm_read_byte(&keymaps[(layer)][(row)][(col)]))
