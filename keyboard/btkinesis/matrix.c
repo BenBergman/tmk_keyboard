@@ -21,18 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdint.h>
 #include <stdbool.h>
 #include <avr/io.h>
-#include <avr/interrupt.h>
 #include <util/delay.h>
 #include "print.h"
+#include "debug.h"
 #include "util.h"
-#include "timer.h"
 #include "matrix.h"
 
-
-// Timer resolution check
-#if (1000000/TIMER_RAW_FREQ > 20)
-#   error "Timer resolution(>20us) is not enough for HHKB matrix scan tweak on V-USB."
-#endif
 
 #if (MATRIX_COLS > 16)
 #   error "MATRIX_COLS must not exceed 16"
@@ -41,6 +35,69 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #   error "MATRIX_ROWS must not exceed 255"
 #endif
 
+#define _DDRA (uint8_t *const)&DDRA
+#define _DDRB (uint8_t *const)&DDRB
+#define _DDRC (uint8_t *const)&DDRC
+#define _DDRD (uint8_t *const)&DDRD
+#define _DDRE (uint8_t *const)&DDRE
+#define _DDRF (uint8_t *const)&DDRF
+
+#define _PINA (uint8_t *const)&PINA
+#define _PINB (uint8_t *const)&PINB
+#define _PINC (uint8_t *const)&PINC
+#define _PIND (uint8_t *const)&PIND
+#define _PINE (uint8_t *const)&PINE
+#define _PINF (uint8_t *const)&PINF
+
+#define _PORTA (uint8_t *const)&PORTA
+#define _PORTB (uint8_t *const)&PORTB
+#define _PORTC (uint8_t *const)&PORTC
+#define _PORTD (uint8_t *const)&PORTD
+#define _PORTE (uint8_t *const)&PORTE
+#define _PORTF (uint8_t *const)&PORTF
+
+#define _BIT0 0x01
+#define _BIT1 0x02
+#define _BIT2 0x04
+#define _BIT3 0x08
+#define _BIT4 0x10
+#define _BIT5 0x20
+#define _BIT6 0x40
+#define _BIT7 0x80
+
+/* Specifies the ports and pin numbers for the rows */
+static
+uint8_t *const row_ddr[MATRIX_ROWS] = {
+                                           _DDRB,                  _DDRB,
+                                                           _DDRC,  _DDRC,
+           _DDRD,  _DDRD,  _DDRD,  _DDRD,  _DDRD,  _DDRD,  _DDRD,  _DDRD,
+           _DDRF,  _DDRF,                  _DDRF,  _DDRF,  _DDRF,  _DDRF};
+
+static
+uint8_t *const row_port[MATRIX_ROWS] = {
+                                          _PORTB,                 _PORTB,
+                                                          _PORTC, _PORTC,
+          _PORTD, _PORTD, _PORTD, _PORTD, _PORTD, _PORTD, _PORTD, _PORTD,
+          _PORTF, _PORTF,                 _PORTF, _PORTF, _PORTF, _PORTF};
+
+static
+uint8_t *const row_pin[MATRIX_ROWS] = {
+                                           _PINB,                  _PINB,
+                                                           _PINC,  _PINC,
+           _PIND,  _PIND,  _PIND,  _PIND,  _PIND,  _PIND,  _PIND,  _PIND,
+           _PINF,  _PINF,                  _PINF,  _PINF,  _PINF,  _PINF};
+
+static
+const uint8_t row_bit[MATRIX_ROWS] = {
+                                           _BIT4,                  _BIT7,
+                                                           _BIT6,  _BIT7,
+           _BIT0,  _BIT1,  _BIT2,  _BIT3,  _BIT4,  _BIT5,  _BIT6,  _BIT7,
+           _BIT0,  _BIT1,                  _BIT4,  _BIT5,  _BIT6,  _BIT7};
+
+#ifndef DEBOUNCE
+#   define DEBOUNCE	0
+#endif
+static uint8_t debouncing = DEBOUNCE;
 
 // matrix state buffer(1:on, 0:off)
 static matrix_row_t *matrix;
@@ -48,77 +105,12 @@ static matrix_row_t *matrix_prev;
 static matrix_row_t _matrix0[MATRIX_ROWS];
 static matrix_row_t _matrix1[MATRIX_ROWS];
 
-
-// Matrix I/O ports
-//
-// row:     HC4051[A,B,C]  selects scan row0-7
-// col:     LS145[A,B,C,D] selects scan col0-7 and enable(D)
-// key:     on: 0/off: 1
-// prev:    unknown: output previous key state(negated)?
-
-#if defined(__AVR_AT90USB1286__)
-// Ports for Teensy++
-// row:     PB0-2
-// col:     PB3-5,6
-// key:     PE6(pull-uped)
-// prev:    PE7
-#define KEY_INIT()              do {    \
-    DDRB |= 0x7F;                       \
-    DDRE |=  (1<<7);                    \
-    DDRE &= ~(1<<6);                    \
-    PORTE |= (1<<6);                    \
-} while (0)
-#define KEY_SELECT(ROW, COL)    (PORTB = (PORTB & 0xC0) |       \
-                                         (((COL) & 0x07)<<3) |    \
-                                         ((ROW) & 0x07))
-#define KEY_ENABLE()            (PORTB &= ~(1<<6))
-#define KEY_UNABLE()            (PORTB |=  (1<<6))
-#define KEY_STATE()             (PINE & (1<<6))
-#define KEY_PREV_ON()           (PORTE |=  (1<<7))
-#define KEY_PREV_OFF()          (PORTE &= ~(1<<7))
-#define KEY_POWER_ON()
-#define KEY_POWER_OFF()
-
-#elif defined(__AVR_ATmega328P__)
-// Ports for V-USB
-// key:     PB0(pull-uped)
-// prev:    PB1
-// row:     PB2-4
-// col:     PC0-2,3
-// power:   PB5(Low:on/Hi-z:off)
-#define KEY_INIT()              do {    \
-    DDRB  |= 0x3E;                      \
-    DDRB  &= ~(1<<0);                   \
-    PORTB |= 1<<0;                      \
-    DDRC  |= 0x0F;                      \
-    KEY_UNABLE();                       \
-    KEY_PREV_OFF();                     \
-} while (0)
-#define KEY_SELECT(ROW, COL)    do {    \
-    PORTB = (PORTB & 0xE3) | ((ROW) & 0x07)<<2; \
-    PORTC = (PORTC & 0xF8) | ((COL) & 0x07);    \
-} while (0)
-#define KEY_ENABLE()            (PORTC &= ~(1<<3))
-#define KEY_UNABLE()            (PORTC |=  (1<<3))
-#define KEY_STATE()             (PINB & (1<<0))
-#define KEY_PREV_ON()           (PORTB |=  (1<<1))
-#define KEY_PREV_OFF()          (PORTB &= ~(1<<1))
-// Power supply switching
-#define KEY_POWER_ON()          do {    \
-    KEY_INIT();                         \
-    PORTB &= ~(1<<5);                   \
-    _delay_ms(1);                       \
-} while (0)
-#define KEY_POWER_OFF()         do {    \
-    DDRB  &= ~0x3F;                     \
-    PORTB &= ~0x3F;                     \
-    DDRC  &= ~0x0F;                     \
-    PORTC &= ~0x0F;                     \
-} while (0)
-
-#else
-#   error "define code for matrix scan"
+#ifdef MATRIX_HAS_GHOST
+static bool matrix_has_ghost_in_row(uint8_t row);
 #endif
+static uint8_t read_col(void);
+static void unselect_rows(void);
+static void select_row(uint8_t row);
 
 
 inline
@@ -135,73 +127,57 @@ uint8_t matrix_cols(void)
 
 void matrix_init(void)
 {
-    KEY_INIT();
+    // initialize row and col
+    unselect_rows(); /* SET ROWS TO HI-Z */
+    // Input with pull-up(DDR:0, PORT:1)
+    DDRB = 0x00;
+    PORTB = 0xFF;
 
     // initialize matrix state: all keys off
-    for (uint8_t i=0; i < MATRIX_ROWS; i++) _matrix0[i] = 0x00;
-    for (uint8_t i=0; i < MATRIX_ROWS; i++) _matrix1[i] = 0x00;
+    for (uint8_t i=0; i < MATRIX_ROWS; i++) {
+		_matrix0[i] = 0x00;
+		_matrix1[i] = 0x00;
+	}
     matrix = _matrix0;
     matrix_prev = _matrix1;
 }
 
 uint8_t matrix_scan(void)
 {
-    matrix_row_t *tmp;
+    if (!debouncing) {
+        matrix_row_t *tmp = matrix_prev;
+        matrix_prev = matrix;
+        matrix = tmp;
+    }
 
-    tmp = matrix_prev;
-    matrix_prev = matrix;
-    matrix = tmp;
-
-    KEY_POWER_ON();
-    for (uint8_t row = 0; row < MATRIX_ROWS; row++) {
-        for (uint8_t col = 0; col < MATRIX_COLS; col++) {
-            KEY_SELECT(row, col);
-            _delay_us(40);
-
-            // Not sure this is needed. This just emulates HHKB controller's behaviour.
-            if (matrix_prev[row] & (1<<col)) {
-                KEY_PREV_ON();
+    for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
+        unselect_rows();
+        select_row(i);
+        _delay_us(30);  // without this wait read unstable value.
+        if (matrix[i] != (uint8_t)~read_col()) {
+            matrix[i] = (uint8_t)~read_col();
+            if (debouncing) {
+                debug("bounce!: "); debug_hex(debouncing); print("\n");
             }
-            _delay_us(7);
-
-            // NOTE: KEY_STATE is valid only in 20us after KEY_ENABLE.
-            // If V-USB interrupts in this section we could lose 40us or so
-            // and would read invalid value from KEY_STATE.
-            uint8_t last = TIMER_RAW;
-
-            KEY_ENABLE();
-            // Wait for KEY_STATE outputs its value.
-            // 1us was ok on one HHKB, but not worked on another.
-            _delay_us(10);
-            if (KEY_STATE()) {
-                matrix[row] &= ~(1<<col);
-            } else {
-                matrix[row] |= (1<<col);
-            }
-
-            // Ignore if this code region execution time elapses more than 20us.
-            // MEMO: 20[us] * (TIMER_RAW_FREQ / 1000000)[count per us]
-            // MEMO: then change above using this rule: a/(b/c) = a*1/(b/c) = a*(c/b)
-            if (TIMER_DIFF_RAW(TIMER_RAW, last) > 20/(1000000/TIMER_RAW_FREQ)) {
-                matrix[row] = matrix_prev[row];
-            }
-
-            KEY_PREV_OFF();
-            KEY_UNABLE();
-            // NOTE: KEY_STATE keep its state in 20us after KEY_ENABLE.
-            // This takes 25us or more to make sure KEY_STATE returns to idle state.
-            _delay_us(150);
+            debouncing = DEBOUNCE;
         }
     }
-    KEY_POWER_OFF();
+    unselect_rows();
+
+    if (debouncing) {
+        debouncing--;
+    }
+
     return 1;
 }
 
 bool matrix_is_modified(void)
 {
+    if (debouncing) return false;
     for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
-        if (matrix[i] != matrix_prev[i])
+        if (matrix[i] != matrix_prev[i]) {
             return true;
+        }
     }
     return false;
 }
@@ -209,6 +185,12 @@ bool matrix_is_modified(void)
 inline
 bool matrix_has_ghost(void)
 {
+#ifdef MATRIX_HAS_GHOST
+    for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
+        if (matrix_has_ghost_in_row(i))
+            return true;
+    }
+#endif
     return false;
 }
 
@@ -230,17 +212,18 @@ uint16_t matrix_get_row(uint8_t row)
 
 void matrix_print(void)
 {
-#if (MATRIX_COLS <= 8)
     print("\nr/c 01234567\n");
-#else
-    print("\nr/c 0123456789ABCDEF\n");
-#endif
     for (uint8_t row = 0; row < matrix_rows(); row++) {
         phex(row); print(": ");
 #if (MATRIX_COLS <= 8)
         pbin_reverse(matrix_get_row(row));
 #else
         pbin_reverse16(matrix_get_row(row));
+#endif
+#ifdef MATRIX_HAS_GHOST
+        if (matrix_has_ghost_in_row(row)) {
+            print(" <ghost");
+        }
 #endif
         print("\n");
     }
@@ -257,4 +240,85 @@ uint8_t matrix_key_count(void)
 #endif
     }
     return count;
+}
+
+#ifdef MATRIX_HAS_GHOST
+inline
+static bool matrix_has_ghost_in_row(uint8_t row)
+{
+    // no ghost exists in case less than 2 keys on
+    if (((matrix[row] - 1) & matrix[row]) == 0)
+        return false;
+
+    // ghost exists in case same state as other row
+    for (uint8_t i=0; i < MATRIX_ROWS; i++) {
+        if (i != row && (matrix[i] & matrix[row]) == matrix[row])
+            return true;
+    }
+    return false;
+}
+#endif
+
+inline
+static uint8_t read_col(void)
+{
+    return PINB;
+}
+
+inline
+static void unselect_rows(void)
+{
+    // Hi-Z(DDR:0, PORT:0) to unselect
+    DDRC  &= ~0b01000000; // PC: 6
+    PORTC &= ~0b11000000;
+    DDRD  &= ~0b11100111; // PD: 7,6,5,2,1,0
+    PORTD &= ~0b11000111;
+    DDRF  &= ~0b11000000; // PF: 7,6
+    PORTF &= ~0b11000000;
+}
+
+inline
+static void select_row(uint8_t row)
+{
+    // Output low(DDR:1, PORT:0) to select
+    // row: 0    1    2    3    4    5    6    7    8
+    // pin: PD0, PD5, PD7, PF6, PD6, PD1, PD2, PC6, PF7
+    switch (row) {
+        case 0:
+            DDRD  |= (1<<0);
+            PORTD &= ~(1<<0);
+            break;
+        case 1:
+            DDRD  |= (1<<5);
+            PORTD &= ~(1<<5);
+            break;
+        case 2:
+            DDRD  |= (1<<7);
+            PORTD &= ~(1<<7);
+            break;
+        case 3:
+            DDRF  |= (1<<6);
+            PORTF &= ~(1<<6);
+            break;
+        case 4:
+            DDRD  |= (1<<6);
+            PORTD &= ~(1<<6);
+            break;
+        case 5:
+            DDRD  |= (1<<1);
+            PORTD &= ~(1<<1);
+            break;
+        case 6:
+            DDRD  |= (1<<2);
+            PORTD &= ~(1<<2);
+            break;
+        case 7:
+            DDRC  |= (1<<6);
+            PORTC &= ~(1<<6);
+            break;
+        case 8:
+            DDRF  |= (1<<7);
+            PORTF &= ~(1<<7);
+            break;
+    }
 }
