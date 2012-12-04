@@ -268,8 +268,12 @@ matrix_row_t matrix_get_row(uint8_t row)
 
 void matrix_print(void)
 {
-    print("\nr/c 01234567\n");
-    for (uint8_t row = 0; row < matrix_rows(); row++) {
+    print("\nr/c ");
+	for (int col = 0; col < MATRIX_COLS; col++) {
+		phex(col);
+	}
+	print("\n");
+    for (uint8_t row = 0; row < MATRIX_ROWS; row++) {
         phex(row); print(": ");
 #if (MATRIX_COLS <= 8)
         pbin_reverse(matrix_get_row(row));
