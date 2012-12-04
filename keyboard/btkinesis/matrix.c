@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /*
  * THE PLAN
  *
- * PORTB is all pin change interrupts. Use for the 8 rows (needed for power
+ * PORTB is all pin change interrupts. Use for the 8 cols (needed for power
  * saving mode).
  * PORTD3:0 and PORTE6 are interrupts. Save for joystick and potential IO
  * expander (needed for power saving mode).
@@ -31,36 +31,36 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * PORTD7:6,4 and PORT7:4,1:0 are ADCs. Save one for battery meter.
  *
  * Total Pins
- * PORTB0 - row 0
- * PORTB1 - row 1
- * PORTB2 - row 2
- * PORTB3 - row 3
- * PORTB4 - row 4
- * PORTB5 - row 5
- * PORTB6 - row 6
- * PORTB7 - row 7
+ * PORTB0 - col 0
+ * PORTB1 - col 1
+ * PORTB2 - col 2
+ * PORTB3 - col 3
+ * PORTB4 - col 4
+ * PORTB5 - col 5
+ * PORTB6 - col 6
+ * PORTB7 - col 7
  *
- * PORTC6 - col 6
- * PORTC7 - col 7
+ * PORTC6 - row 6
+ * PORTC7 - row 7
  *
  * PORTD0 - I2C SCL (EasyPoint/IO expander/etc)
  * PORTD1 - I2C SDA(EasyPoint/IO expander/etc)
  * PORTD2 - UART RXD (WT12)
  * PORTD3 - UART TXD (WT12)
  * PORTD4 - ADC? EasyPoint button?
- * PORTD5 - col 8
- * PORTD6 - col 9
- * PORTD7 - col 10
+ * PORTD5 - row 8
+ * PORTD6 - row 9
+ * PORTD7 - row 10
  *
- * PORTE2 - col 11
+ * PORTE2 - row 11
  * PORTE6 - INT6 (EasyPoint)
  *
- * PORTF0 - col 0
- * PORTF1 - col 1
- * PORTF4 - col 2
- * PORTF5 - col 3
- * PORTF6 - col 4
- * PORTF7 - col 5
+ * PORTF0 - row 0
+ * PORTF1 - row 1
+ * PORTF4 - row 2
+ * PORTF5 - row 3
+ * PORTF6 - row 4
+ * PORTF7 - row 5
  *
  * Future changes:
  * - Move WT12 to an I2C to UART adapter to free two interrupt pins.
