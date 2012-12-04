@@ -128,31 +128,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* Specifies the ports and pin numbers for the rows */
 static
 uint8_t *const row_ddr[MATRIX_ROWS] = {
-                                           _DDRB,                  _DDRB,
-                                                           _DDRC,  _DDRC,
-           _DDRD,  _DDRD,  _DDRD,  _DDRD,  _DDRD,  _DDRD,  _DDRD,  _DDRD,
-           _DDRF,  _DDRF,                  _DDRF,  _DDRF,  _DDRF,  _DDRF};
+	 _DDRF,  _DDRF,                  _DDRF,  _DDRF,  _DDRF,  _DDRF,
+	                                                 _DDRC,  _DDRC,
+	                                         _DDRD,  _DDRD,  _DDRD,
+	                _DDRE};
 
 static
 uint8_t *const row_port[MATRIX_ROWS] = {
-                                          _PORTB,                 _PORTB,
-                                                          _PORTC, _PORTC,
-          _PORTD, _PORTD, _PORTD, _PORTD, _PORTD, _PORTD, _PORTD, _PORTD,
-          _PORTF, _PORTF,                 _PORTF, _PORTF, _PORTF, _PORTF};
+	_PORTF, _PORTF,                 _PORTF, _PORTF, _PORTF, _PORTF,
+	                                                _PORTC, _PORTC,
+	                                         _DDRD, _PORTD, _PORTD,
+	                _PORTE};
 
 static
 uint8_t *const row_pin[MATRIX_ROWS] = {
-                                           _PINB,                  _PINB,
-                                                           _PINC,  _PINC,
-           _PIND,  _PIND,  _PIND,  _PIND,  _PIND,  _PIND,  _PIND,  _PIND,
-           _PINF,  _PINF,                  _PINF,  _PINF,  _PINF,  _PINF};
+	 _PINF,  _PINF,                  _PINF,  _PINF,  _PINF,  _PINF,
+	                                                 _PINC,  _PINC,
+	                                         _PIND,  _PIND,  _PIND,
+	                _PINE};
 
 static
 const uint8_t row_bit[MATRIX_ROWS] = {
-                                           _BIT4,                  _BIT7,
-                                                           _BIT6,  _BIT7,
-           _BIT0,  _BIT1,  _BIT2,  _BIT3,  _BIT4,  _BIT5,  _BIT6,  _BIT7,
-           _BIT0,  _BIT1,                  _BIT4,  _BIT5,  _BIT6,  _BIT7};
+	 _BIT0,  _BIT1,                  _BIT4,  _BIT5,  _BIT6,  _BIT7,
+	                                                 _BIT6,  _BIT7,
+	                                         _BIT5,  _BIT6,  _BIT7,
+	                _BIT2};
 
 #ifndef DEBOUNCE
 #   define DEBOUNCE	0
