@@ -168,7 +168,7 @@ static matrix_row_t _matrix1[MATRIX_ROWS];
 #ifdef MATRIX_HAS_GHOST
 static bool matrix_has_ghost_in_row(uint8_t row);
 #endif
-static uint8_t read_col(void);
+static matrix_row_t read_row(void);
 static void unselect_rows(void);
 static void select_row(uint8_t row);
 
@@ -214,8 +214,8 @@ uint8_t matrix_scan(void)
         unselect_rows();
         select_row(i);
         _delay_us(30);  // without this wait read unstable value.
-        if (matrix[i] != (uint8_t)~read_col()) {
-            matrix[i] = (uint8_t)~read_col();
+        if (matrix[i] != (matrix_row_t)~read_row()) {
+            matrix[i] = (matrix_row_t)~read_row();
             if (debouncing) {
                 debug("bounce!: "); debug_hex(debouncing); print("\n");
             }
@@ -261,11 +261,7 @@ bool matrix_is_on(uint8_t row, uint8_t col)
 }
 
 inline
-#if (MATRIX_COLS <= 8)
-uint8_t matrix_get_row(uint8_t row)
-#else
-uint16_t matrix_get_row(uint8_t row)
-#endif
+matrix_row_t matrix_get_row(uint8_t row)
 {
     return matrix[row];
 }
@@ -320,7 +316,7 @@ static bool matrix_has_ghost_in_row(uint8_t row)
 #endif
 
 inline
-static uint8_t read_col(void)
+static matrix_row_t read_row(void)
 {
     return PINB;
 }
