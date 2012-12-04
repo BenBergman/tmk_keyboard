@@ -79,14 +79,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	                                          K604,             K711 \
 ) \
 { \
-	{ KC_##K000, KC_##K001, KC_##K002, KC_##K003, KC_##K004, KC_##K005, KC_##K006, KC_##K007, KC_##K008, KC_##K009, KC_##K010, KC_##K011 }, \
-	{ KC_##K100, KC_##K101, KC_##K102, KC_##K103, KC_##K104, KC_##K105, KC_##K106, KC_##K107, KC_##K108, KC_##K109, KC_##K110, KC_##K111 }, \
-	{ KC_##K200, KC_##K201, KC_##K202, KC_##K203, KC_##K204, KC_##K205, KC_##K206, KC_##K207, KC_##K208, KC_##K209, KC_##K210, KC_##K211 }, \
-	{ KC_##K300, KC_##K301, KC_##K302, KC_##K303, KC_##K304, KC_##K305, KC_##K306, KC_##K307, KC_##K308, KC_##K309, KC_##K310, KC_##K311 }, \
-	{ KC_NO,     KC_##K401, KC_##K402, KC_##K403, KC_NO,     KC_##K405, KC_##K406, KC_NO,     KC_##K408, KC_##K409, KC_##K410, KC_NO     }, \
-	{ KC_NO,     KC_##K501, KC_##K502, KC_##K503, KC_NO,     KC_NO,     KC_NO,     KC_NO,     KC_##K508, KC_##K509, KC_##K510, KC_NO     }, \
-	{ KC_##K600, KC_##K601, KC_##K602, KC_##K603, KC_##K604, KC_##K605, KC_##K606, KC_##K607, KC_##K608, KC_##K609, KC_##K610, KC_##K611 }, \
-	{ KC_##K700, KC_##K701, KC_##K702, KC_##K703, KC_##K704, KC_##K705, KC_##K706, KC_##K707, KC_##K708, KC_##K709, KC_##K710, KC_##K711 } \
+	{ KC_##K000, KC_##K100, KC_##K200, KC_##K300, KC_NO,     KC_NO,     KC_##K600, KC_##K700 }, \
+	{ KC_##K001, KC_##K101, KC_##K201, KC_##K301, KC_##K401, KC_##K501, KC_##K601, KC_##K701 }, \
+	{ KC_##K002, KC_##K102, KC_##K202, KC_##K302, KC_##K402, KC_##K502, KC_##K602, KC_##K702 }, \
+	{ KC_##K003, KC_##K103, KC_##K203, KC_##K303, KC_##K403, KC_##K503, KC_##K603, KC_##K703 }, \
+	{ KC_##K004, KC_##K104, KC_##K204, KC_##K304, KC_NO,     KC_NO,     KC_##K604, KC_##K704 }, \
+	{ KC_##K005, KC_##K105, KC_##K205, KC_##K305, KC_##K405, KC_NO,     KC_##K605, KC_##K705 }, \
+	{ KC_##K006, KC_##K106, KC_##K206, KC_##K306, KC_##K406, KC_NO,     KC_##K606, KC_##K706 }, \
+	{ KC_##K007, KC_##K107, KC_##K207, KC_##K307, KC_NO,     KC_NO,     KC_##K607, KC_##K707 }, \
+	{ KC_##K008, KC_##K108, KC_##K208, KC_##K308, KC_##K408, KC_##K508, KC_##K608, KC_##K708 }, \
+	{ KC_##K009, KC_##K109, KC_##K209, KC_##K309, KC_##K409, KC_##K509, KC_##K609, KC_##K709 }, \
+	{ KC_##K010, KC_##K110, KC_##K210, KC_##K310, KC_##K410, KC_##K510, KC_##K610, KC_##K710 }, \
+	{ KC_##K011, KC_##K111, KC_##K211, KC_##K311, KC_NO,     KC_NO,     KC_##K611, KC_##K711 } \
 }
 
 #define KEYCODE(layer, row, col) (pgm_read_byte(&keymaps[(layer)][(row)][(col)]))
