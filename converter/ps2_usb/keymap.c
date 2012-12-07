@@ -378,11 +378,11 @@ static const uint8_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      */
     KEYMAP(
     ESC, F1,  F2,  F3,  F4,  F5,  F6,  F7,  F8,  F9,  F10, F11, F12,           PSCR,SLCK,BRK,
-    ESC, F1,  F2,  F3,  F4,  F5,  F6,  F7,  F8,  F8,  F10, F11, F12, BSPC,     INS, HOME,PGUP,    NLCK,PSLS,PAST,PMNS,
-    TAB, WH_L,WH_D,MS_U,WH_U,WH_R,WH_L,WH_D,WH_U,WH_R,MS_R,NO,  NO,  BSLS,     DEL, END, PGDN,    P7,  P8,  P9,
-    CAPS,VOLD,MS_L,MS_D,MS_R,NO,  MS_L,MS_L,MS_U,MS_R,FN0, NO,       ENT,                         P4,  P5,  P6,  PPLS,
-    LSFT,FN2, VOLU,MS_D,MS_U,BTN3,BTN2,BTN1,VOLD,VOLU,MUTE,          RSFT,          UP,           P1,  P2,  P3,
-    LCTL,LGUI,LALT,          BTN1,                    RALT,RGUI,APP, RCTL,     LEFT,DOWN,RGHT,    P0,       PDOT,PENT
+    ESC, F1,  F2,  F3,  F4,  F5,  F6,  NLCK,PEQL,PSLS,PAST,PDOT,PENT,BSPC,     INS, HOME,PGUP,    NLCK,PSLS,PAST,PMNS,
+    TAB, WH_L,WH_D,MS_U,WH_U,WH_R,VOLU,P7,  P8,  P9,  PMNS,NO,  NO,  BSLS,     DEL, END, PGDN,    P7,  P8,  P9,
+    CAPS,VOLD,MS_L,MS_D,MS_R,NO,  VOLD,P4,  P5,  P6,  PPLS,NO,       ENT,                         P4,  P5,  P6,  PPLS,
+    LSFT,FN2, BTN3,BTN2,BTN1,NO,  MUTE,P1,  P2,  P3,  PENT,          RSFT,          UP,           P1,  P2,  P3,
+    LCTL,LGUI,LALT,          P0,                      RALT,RGUI,APP, RCTL,     LEFT,DOWN,RGHT,    P0,       PDOT,PENT
     )
 
 };
