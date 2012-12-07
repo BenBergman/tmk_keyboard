@@ -31,9 +31,9 @@ MOUSEKEY_ENABLE = yes	# Mouse keys
 EXTRAKEY_ENABLE = yes	# Audio control and System control
 NKRO_ENABLE = yes	# USB Nkey Rollover
 
-PS2_USE_USART = yes	# uses hardware USART engine for PS/2 signal receive(recomened)
+#PS2_USE_USART = yes	# uses hardware USART engine for PS/2 signal receive(recomened)
 #PS2_USE_INT = yes	# uses external interrupt for falling edge of PS/2 clock pin
-#PS2_USE_BUSYWAIT = yes	# uses primitive reference code
+PS2_USE_BUSYWAIT = yes	# uses primitive reference code
 
 
 # keyboard dependent files

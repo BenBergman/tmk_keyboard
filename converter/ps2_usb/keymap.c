@@ -174,7 +174,7 @@ KEYMAP_ALL( \
 static const uint8_t PROGMEM fn_layer[] = {
     5,              // Fn0
     6,              // Fn1
-    0,              // Fn2
+    7,              // Fn2
     0,              // Fn3
     0,              // Fn4
     0,              // Fn5
@@ -187,7 +187,7 @@ static const uint8_t PROGMEM fn_layer[] = {
 static const uint8_t PROGMEM fn_keycode[] = {
     KC_SCLN,        // Fn0
     KC_SLSH,        // Fn1
-    KC_NO,          // Fn2
+    KC_SCLN,        // Fn2
     KC_NO,          // Fn3
     KC_NO,          // Fn4
     KC_NO,          // Fn5
@@ -289,7 +289,7 @@ static const uint8_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     GRV, 1,   2,   3,   4,   5,   6,   7,   8,   9,   0,   LBRC,RBRC,BSPC,     INS, HOME,PGUP,    NLCK,PSLS,PAST,PMNS,
     TAB, QUOT,COMM,DOT, P,   Y,   F,   G,   C,   R,   L,   SLSH,EQL, BSLS,     DEL, END, PGDN,    P7,  P8,  P9,
     CAPS,A,   O,   E,   U,   I,   D,   H,   T,   N,   S,   MINS,     ENT,                         P4,  P5,  P6,  PPLS,
-    LSFT,SCLN,Q,   J,   K,   X,   B,   M,   W,   V,   Z,             RSFT,          UP,           P1,  P2,  P3,
+    LSFT,FN2, Q,   J,   K,   X,   B,   M,   W,   V,   Z,             RSFT,          UP,           P1,  P2,  P3,
     LCTL,LGUI,LALT,          SPC,                     RALT,RGUI,APP, RCTL,     LEFT,DOWN,RGHT,    P0,       PDOT,PENT
     ),
 
@@ -360,6 +360,31 @@ static const uint8_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     LSFT,VOLD,VOLU,MUTE,NO,  NO,  HOME,PGDN,PGUP,END, FN1,           RSFT,          UP,           P1,  P2,  P3,
     LCTL,LGUI,LALT,          SPC,                     RALT,RGUI,APP, RCTL,     LEFT,DOWN,RGHT,    P0,       PDOT,PENT
     ),
+
+    /* 7: Dvorak Mouse keys
+     * ,-----------------------------------------------------------.
+     * |Esc| F1| F2| F3| F4| F5| F6| F7| F8| F9|F10|F11|F12|Backspa|
+     * |-----------------------------------------------------------|
+     * |Tab  |MwL|MwU|McU|WwU|WwR|MwL|MwD|MwU|MwR|   |   |   |    \|
+     * |-----------------------------------------------------------|
+     * |CapsLo|   |McL|McD|McR|   |McL|McD|McU|McR|Fn0|   |Return  |
+     * |-----------------------------------------------------------|
+     * |Shift   |VoD|VoU|Mut|Mb2|Mb3|Mb2|Mb1|VoD|VoU|Mut|Shift     |
+     * |-----------------------------------------------------------|
+     * |Ctrl |Gui |Alt |         Mb1           |Alt |Gui |Menu|Ctrl|
+     * `-----------------------------------------------------------'
+     * Mc = mouse cursor, Mw = mouse wheel, Mb = mouse button
+     * Vo = Volume, Mut = Mute
+     */
+    KEYMAP(
+    ESC, F1,  F2,  F3,  F4,  F5,  F6,  F7,  F8,  F9,  F10, F11, F12,           PSCR,SLCK,BRK,
+    ESC, F1,  F2,  F3,  F4,  F5,  F6,  F7,  F8,  F8,  F10, F11, F12, BSPC,     INS, HOME,PGUP,    NLCK,PSLS,PAST,PMNS,
+    TAB, WH_L,WH_D,MS_U,WH_U,WH_R,WH_L,WH_D,WH_U,WH_R,MS_R,NO,  NO,  BSLS,     DEL, END, PGDN,    P7,  P8,  P9,
+    CAPS,VOLD,MS_L,MS_D,MS_R,NO,  MS_L,MS_L,MS_U,MS_R,FN0, NO,       ENT,                         P4,  P5,  P6,  PPLS,
+    LSFT,FN2, VOLU,MS_D,MS_U,BTN3,BTN2,BTN1,VOLD,VOLU,MUTE,          RSFT,          UP,           P1,  P2,  P3,
+    LCTL,LGUI,LALT,          BTN1,                    RALT,RGUI,APP, RCTL,     LEFT,DOWN,RGHT,    P0,       PDOT,PENT
+    )
+
 };
 
 
