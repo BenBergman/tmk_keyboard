@@ -13,15 +13,13 @@ CXXFLAGS += -include $(CPPUTEST_HOME)/include/CppUTest/MemoryLeakDetectorNewMacr
 CFLAGS += -include $(CPPUTEST_HOME)/include/CppUTest/MemoryLeakDetectorMallocMacros.h
 LD_LIBRARIES = -L$(CPPUTEST_HOME)/lib -lCppUTest -lCppUTestExt
 SRC_DIRS = \
-		   .. \
+		   src \
 
 TEST_SRC_DIRS = \
-				. \
+				tests \
 
 INCLUDE_DIRS = \
 			   $(CPPUTEST_HOME)/include \
-			   .. \
-			   ../.. \
-			   ../../../common \
+			   include \
 
 include MakefileWorker.mk

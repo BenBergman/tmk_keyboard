@@ -29,24 +29,3 @@ cleanCodeXXX:
 CppUTest: $(CPPUTEST_HOME)/lib/libCppUTest.a
 
 CppUTestExt: $(CPPUTEST_HOME)/lib/libCppUTestExt.a
-
-#
-#
-#
-#
-#
-#
-#CPPUTEST_HOME = ../../../cpputest
-#CPPFLAGS += -I$(CPPUTEST_HOME)/include
-#
-## Needs to be in production code too
-#CXXFLAGS += -include $(CPPUTEST_HOME)/include/CppUTest/MemoryLeakDetectorNewMacros.h
-#CFLAGS += -include $(CPPUTEST_HOME)/include/CppUTest/MemoryLeakDetectorMallocMacros.h
-#
-#LD_LIBRARIES = -L$(CPPUTEST_HOME)/lib -lCppUTest -lCppUTestExt
-#
-#cpputest/lib/libCppUTest:
-#	cd $(CPPUTEST_HOME); cmake CMakeLists.txt && make
-#
-#all: iwrap_tests.cpp cpputest/lib/libCppUTest
-#	clang++ tests.cpp
