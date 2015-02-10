@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * expander (needed for power saving mode).
  * PORTD3:2 are UART Rx/Tx. Use for bluetooth module.
  * PORTD1:0 are TWI(I2C). Use for joystick and potential IO expander data.
- * PORTD7:6,4 and PORT7:4,1:0 are ADCs. Save one for battery meter.
+ * PORTD7:6,4 and PORTF7:4,1:0 are ADCs. Save one for battery meter.
  *
  * Total Pins
  * PORTB0 - row 0
