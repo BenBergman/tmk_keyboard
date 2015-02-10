@@ -67,8 +67,8 @@ extern const uint16_t fn_actions[];
  * 3 | LS    Z     X     C     V     B     N     M     ,     .     /     RS
  * 4 |       `     IN    LT          RT    UP          DN    [     ]
  * 5 |       F6    F7    F8                            F9    F10   F11
- * 6 | HOME  F3    F4    F5    END   LCTRL SPACE ENTER F12   PS    SL    RALT
- * 7 | BKSP  ESC   F1    F2    DEL   LALT  PGDN  RCTRL PB    PG    KY    PGUP
+ * 6 | BKSP  F3    F4    F5    DEL   LCTRL SPACE ENTER F12   PS    SL    RALT
+ * 7 | HOME  ESC   F1    F2    END   LALT  PGDN  RCTRL PB    PG    KY    PGUP
  */
 
 // Convert physical keyboard layout to matrix array.
@@ -81,8 +81,8 @@ extern const uint16_t fn_actions[];
 	K300, K301, K302, K303, K304, K305,                                     K306, K307, K308, K309, K310, K311, \
 	      K401, K402, K403, K405,                                                 K406, K408, K409, K410, \
 	                                    K605, K705,             K611, K707, \
-	                              K700, K704, K600,             K706, K607, K606, \
-	                                          K604,             K711 \
+	                              K600, K604, K700,             K706, K607, K606, \
+	                                          K704,             K711 \
 ) \
 { \
 	{ KC_##K000, KC_##K100, KC_##K200, KC_##K300, KC_NO,     KC_NO,     KC_##K600, KC_##K700 }, \
