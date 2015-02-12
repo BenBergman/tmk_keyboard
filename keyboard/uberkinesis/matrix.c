@@ -86,6 +86,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "debug.h"
 #include "util.h"
 #include "matrix.h"
+#include "mcp23018.h"
 
 
 #ifndef DEBOUNCE
@@ -97,10 +98,12 @@ static uint8_t debouncing = DEBOUNCE;
 static matrix_row_t matrix[MATRIX_ROWS];
 static matrix_row_t matrix_debouncing[MATRIX_ROWS];
 
-static matrix_row_t read_cols(void);
+static matrix_row_t read_cols(uint8_t row);
 static void init_cols(void);
 static void unselect_rows(void);
 static void select_row(uint8_t row);
+
+static uint8_t mcp23018_reset_loop;
 
 
 inline
@@ -118,6 +121,8 @@ uint8_t matrix_cols(void)
 void matrix_init(void)
 {
     // initialize row and col
+
+    mcp23018_status = init_mcp23018();
     unselect_rows();
     init_cols();
 
@@ -130,10 +135,24 @@ void matrix_init(void)
 
 uint8_t matrix_scan(void)
 {
+    // TODO: fix mcp23018_status errors...?
+//    if (mcp23018_status) { // if there was an error
+//        if (++mcp23018_reset_loop == 0) {
+//            // since mcp23018_reset_loop is 8 bit - we'll try to reset once in 255 matrix scans
+//            // this will be approx bit more frequent than once per second
+//            print("trying to reset mcp23018\n");
+//            mcp23018_status = init_mcp23018();
+//            if (mcp23018_status) {
+//                print("left side not responding\n");
+//            } else {
+//                print("left side attached\n");
+//            }
+//        }
+//    }
+
     for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
         select_row(i);
-        _delay_us(30);  // without this wait read unstable value.
-        matrix_row_t cols = read_cols();
+        matrix_row_t cols = read_cols(i);
         if (matrix_debouncing[i] != cols) {
             matrix_debouncing[i] = cols;
             if (debouncing) {
@@ -195,19 +214,43 @@ uint8_t matrix_key_count(void)
 }
 
 /* Column pin configuration
+ *
+ * 32u4
  * col: 0   1   2   3   4   5   6   7
  * pin: B0  B1  B2  B3  B4  B5  D6  B7
+ *
+ * MCP23018
+ * col: 0   1   2   3   4   5   6   7
+ * pin: A0  A1  A2  A3  A4  A5  A6  A7
  */
 static void  init_cols(void)
 {
     // Input with pull-up(DDR:0, PORT:1)
     DDRB  = 0x00;
     PORTB = 0xFF;
+
+    // TODO: init mcp23018
 }
 
-static matrix_row_t read_cols(void)
+static matrix_row_t read_cols(uint8_t row)
 {
-    return ~PINB;
+    if (row < 6) {
+        _delay_us(30);  // without this wait read unstable value.
+        return ~PINB;
+    } else {
+//        if (mcp23018_status) { // if there was an error
+//            return 0;
+//        } else {
+//            uint8_t data = 0;
+//            mcp23018_status = i2c_start(I2C_ADDR_WRITE);    if (mcp23018_status) goto out;
+//            mcp23018_status = i2c_write(GPIOA);             if (mcp23018_status) goto out;
+//            mcp23018_status = i2c_start(I2C_ADDR_READ);     if (mcp23018_status) goto out;
+//            data = i2c_readNak();
+//out:
+//            i2c_stop();
+//            return data;
+//        }
+    }
 }
 
 /* Row pin configuration
@@ -225,59 +268,53 @@ static void unselect_rows(void)
     PORTD &= ~0b11100000;
     DDRE  &= ~0b01000000; // PE: 6
     PORTE &= ~0b01000000;
+
+//    if (!mcp23018_status) {
+//        mcp23018_status = i2c_start(I2C_ADDR_WRITE);    if (mcp23018_status) goto out;
+//        mcp23018_status = i2c_write(GPIOB);             if (mcp23018_status) goto out;
+//        mcp23018_status = i2c_write(0xFF);              if (mcp23018_status) goto out;
+//out:
+//        i2c_stop();
+//    }
 }
 
 static void select_row(uint8_t row)
 {
-    // Output low(DDR:1, PORT:0) to select
-    switch (row) {
-        case 0:
-            DDRF  |= (1<<0);
-            PORTF &= ~(1<<0);
-            break;
-        case 1:
-            DDRF  |= (1<<1);
-            PORTF &= ~(1<<1);
-            break;
-        case 2:
-            DDRF  |= (1<<4);
-            PORTF &= ~(1<<4);
-            break;
-        case 3:
-            DDRF  |= (1<<5);
-            PORTF &= ~(1<<5);
-            break;
-        case 4:
-            DDRF  |= (1<<6);
-            PORTF &= ~(1<<6);
-            break;
-        case 5:
-            DDRF  |= (1<<7);
-            PORTF &= ~(1<<7);
-            break;
-        case 6:
-            DDRC  |= (1<<6);
-            PORTC &= ~(1<<6);
-            break;
-        case 7:
-            DDRC  |= (1<<7);
-            PORTC &= ~(1<<7);
-            break;
-        case 8:
-            DDRD  |= (1<<5);
-            PORTD &= ~(1<<5);
-            break;
-        case 9:
-            DDRD  |= (1<<6);
-            PORTD &= ~(1<<6);
-            break;
-        case 10:
-            DDRD  |= (1<<7);
-            PORTD &= ~(1<<7);
-            break;
-        case 11:
-            DDRE  |= (1<<6);
-            PORTE &= ~(1<<6);
-            break;
+    if (row < 6) {
+        // Output low(DDR:1, PORT:0) to select
+        switch (row) {
+            case 0:
+                DDRF  |= (1<<0);
+                PORTF &= ~(1<<0);
+                break;
+            case 1:
+                DDRF  |= (1<<1);
+                PORTF &= ~(1<<1);
+                break;
+            case 2:
+                DDRF  |= (1<<4);
+                PORTF &= ~(1<<4);
+                break;
+            case 3:
+                DDRF  |= (1<<5);
+                PORTF &= ~(1<<5);
+                break;
+            case 4:
+                DDRF  |= (1<<6);
+                PORTF &= ~(1<<6);
+                break;
+            case 5:
+                DDRF  |= (1<<7);
+                PORTF &= ~(1<<7);
+                break;
+        }
+    } else {
+//        if (!mcp23018_status) {
+//            mcp23018_status = i2c_start(I2C_ADDR_WRITE);    if (mcp23018_status) goto out;
+//            mcp23018_status = i2c_write(GPIOB);             if (mcp23018_status) goto out;
+//            mcp23018_status = i2c_write(0xFF & ~(1<<row));  if (mcp23018_status) goto out;
+//out:
+//            i2c_stop();
+//        }
     }
 }
