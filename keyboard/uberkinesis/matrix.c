@@ -136,19 +136,19 @@ void matrix_init(void)
 uint8_t matrix_scan(void)
 {
     // TODO: fix mcp23018_status errors...?
-//    if (mcp23018_status) { // if there was an error
-//        if (++mcp23018_reset_loop == 0) {
-//            // since mcp23018_reset_loop is 8 bit - we'll try to reset once in 255 matrix scans
-//            // this will be approx bit more frequent than once per second
-//            print("trying to reset mcp23018\n");
-//            mcp23018_status = init_mcp23018();
-//            if (mcp23018_status) {
-//                print("left side not responding\n");
-//            } else {
-//                print("left side attached\n");
-//            }
-//        }
-//    }
+    if (mcp23018_status) { // if there was an error
+        if (++mcp23018_reset_loop == 0) {
+            // since mcp23018_reset_loop is 8 bit - we'll try to reset once in 255 matrix scans
+            // this will be approx bit more frequent than once per second
+            print("trying to reset mcp23018\n");
+            mcp23018_status = init_mcp23018();
+            if (mcp23018_status) {
+                print("left side not responding\n");
+            } else {
+                print("left side attached\n");
+            }
+        }
+    }
 
     for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
         select_row(i);
@@ -238,44 +238,39 @@ static matrix_row_t read_cols(uint8_t row)
         _delay_us(30);  // without this wait read unstable value.
         return ~PINB;
     } else {
-//        if (mcp23018_status) { // if there was an error
-//            return 0;
-//        } else {
-//            uint8_t data = 0;
-//            mcp23018_status = i2c_start(I2C_ADDR_WRITE);    if (mcp23018_status) goto out;
-//            mcp23018_status = i2c_write(GPIOA);             if (mcp23018_status) goto out;
-//            mcp23018_status = i2c_start(I2C_ADDR_READ);     if (mcp23018_status) goto out;
-//            data = i2c_readNak();
-//out:
-//            i2c_stop();
-//            return data;
-//        }
+        if (mcp23018_status) { // if there was an error
+            return 0;
+        } else {
+            uint8_t data = 0;
+            mcp23018_status = i2c_start(I2C_ADDR_WRITE);    if (mcp23018_status) goto out;
+            mcp23018_status = i2c_write(GPIOA);             if (mcp23018_status) goto out;
+            mcp23018_status = i2c_start(I2C_ADDR_READ);     if (mcp23018_status) goto out;
+            data = i2c_readNak();
+            data = ~data;
+out:
+            i2c_stop();
+            return data;
+        }
     }
 }
 
 /* Row pin configuration
- * row: 0  1  2  3  4  5  6  7  8  9  10 11
- * pin: F0 F1 F4 F5 F6 F7 C6 C7 D5 D6 D7 E6
+ * row: 0  1  2  3  4  5
+ * pin: F0 F1 F4 F5 F6 F7
  */
 static void unselect_rows(void)
 {
     // Hi-Z(DDR:0, PORT:0) to unselect
     DDRF  &= ~0b11110011; // PF: 7,6,5,4,1,0
     PORTF &= ~0b11110011;
-    DDRC  &= ~0b11000000; // PC: 7,6
-    PORTC &= ~0b11000000;
-    DDRD  &= ~0b11100000; // PD: 7,6,5
-    PORTD &= ~0b11100000;
-    DDRE  &= ~0b01000000; // PE: 6
-    PORTE &= ~0b01000000;
 
-//    if (!mcp23018_status) {
-//        mcp23018_status = i2c_start(I2C_ADDR_WRITE);    if (mcp23018_status) goto out;
-//        mcp23018_status = i2c_write(GPIOB);             if (mcp23018_status) goto out;
-//        mcp23018_status = i2c_write(0xFF);              if (mcp23018_status) goto out;
-//out:
-//        i2c_stop();
-//    }
+    if (!mcp23018_status) {
+        mcp23018_status = i2c_start(I2C_ADDR_WRITE); if (mcp23018_status) goto out;
+        mcp23018_status = i2c_write(IODIRB); if (mcp23018_status) goto out;
+        mcp23018_status = i2c_write(0b11111111); if (mcp23018_status) goto out;
+out:
+        i2c_stop();
+    }
 }
 
 static void select_row(uint8_t row)
@@ -309,12 +304,16 @@ static void select_row(uint8_t row)
                 break;
         }
     } else {
-//        if (!mcp23018_status) {
-//            mcp23018_status = i2c_start(I2C_ADDR_WRITE);    if (mcp23018_status) goto out;
-//            mcp23018_status = i2c_write(GPIOB);             if (mcp23018_status) goto out;
-//            mcp23018_status = i2c_write(0xFF & ~(1<<row));  if (mcp23018_status) goto out;
-//out:
-//            i2c_stop();
-//        }
+        if (!mcp23018_status) {
+            mcp23018_status = i2c_start(I2C_ADDR_WRITE); if (mcp23018_status) goto out;
+            mcp23018_status = i2c_write(IODIRB); if (mcp23018_status) goto out;
+            mcp23018_status = i2c_write(0xFF & ~(1<<(row - 6))); if (mcp23018_status) goto out;
+            i2c_stop();
+            mcp23018_status = i2c_start(I2C_ADDR_WRITE);    if (mcp23018_status) goto out;
+            mcp23018_status = i2c_write(GPIOB);             if (mcp23018_status) goto out;
+            mcp23018_status = i2c_write(0xFF & ~(1<<(row - 6))); if (mcp23018_status) goto out;
+out:
+            i2c_stop();
+        }
     }
 }
