@@ -12,7 +12,7 @@ In case of Teensy2.0(ATMega32U4):
     - **Interrupt**:   **Clock** is on `PD1` and **Data** on `PD0`.(Recommended. Soarer's converter compatible)
     - **Busywait**:    **Clock** is on `PD1` and **Data** on `PD0`.
     - **USART**:       **Clock** is on `PD5` and **Data** on `PD2`.
-3. Optionally you need pull-up register. 1K-10K Ohm is OK.
+3. Optionally you need pull-up resistor. 1K-10K Ohm is OK.
 
 To change pin configuration edit config.h.
 
@@ -58,8 +58,7 @@ To select method edit Makefile.
 
 V-USB Support
 -------------
-You can also use this converter on ATmega(168/328) with V-USB instead of Teensy.
-The converter on V-USB lacks some features for now: USB NKRO and System/Media control.
+With V-USB you can use this converter on ATmega(168/328) but it doesn't support NKRO at this time.
 
 Circuit:
 
